@@ -57,8 +57,12 @@ int main(int argc, char* argv[])
     printf("Triggering crash...\n");
     consoleUpdate(NULL);
 
+// we mean to do this bit
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
     //Trigger a crash.
     *((u64*)8) = 16;
+#pragma GCC diagnostic pop
 
     // Main loop
     while (appletMainLoop())

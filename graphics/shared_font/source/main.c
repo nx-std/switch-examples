@@ -219,7 +219,7 @@ int main(int argc, char **argv)
         framebuf_width = stride / sizeof(u32);
 
         memset(framebuf, 0, stride*FB_HEIGHT);
-        draw_text(face, framebuf, 64, 64, u8"The quick brown fox jumps over the lazy dog. ファイル\ntest Test");
+        draw_text(face, framebuf, 64, 64, (const char *)u8"The quick brown fox jumps over the lazy dog. ファイル\ntest Test");
 
         framebufferEnd(&fb);
     }
