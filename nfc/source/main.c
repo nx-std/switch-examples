@@ -56,11 +56,11 @@ Result process_amiibo() {
     if (R_FAILED(nfpAttachDeactivateEvent(&handle, &deactivate_event)))
         goto fail_1;
 
-    NfpState state = 0;
+    NfcState state = 0;
     if (R_SUCCEEDED(rc)) {
         rc = nfpGetState(&state);
 
-        if (R_SUCCEEDED(rc) && state == NfpState_NonInitialized) {
+        if (R_SUCCEEDED(rc) && state == NfcState_NonInitialized) {
             printf("Bad nfp state: %u\n", state);
             consoleUpdate(NULL);
             rc = -1;
@@ -106,7 +106,7 @@ Result process_amiibo() {
 
         if (R_SUCCEEDED(rc)) {
             printf("Tag protocol: 0x%02x, type: 0x%02x, UUID: ", tag_info.protocol, tag_info.tag_type);
-            print_hex(tag_info.uuid, tag_info.uuid_length);
+            print_hex(tag_info.uid.uid, tag_info.uid.uid_length);
             printf("\n");
         }
     }
@@ -129,7 +129,7 @@ Result process_amiibo() {
 
         if (R_SUCCEEDED(rc)) {
             printf("Amiibo ID: ");
-            print_hex(model_info.amiibo_id, 8);
+            print_hex(model_info.character_id, 8);
             printf("\n");
         }
     }
@@ -142,7 +142,7 @@ Result process_amiibo() {
 
         if (R_SUCCEEDED(rc)) {
             app_area_size = common_info.application_area_size;
-            printf("Write counter: %d, last write date %d/%d/%d\n\n", common_info.write_counter, common_info.last_write_day, common_info.last_write_month, common_info.last_write_year);
+            printf("Write counter: %d, last write date %d/%d/%d\n\n", common_info.write_counter, common_info.last_write_date.day, common_info.last_write_date.month, common_info.last_write_date.year);
         }
     }
 
@@ -153,7 +153,7 @@ Result process_amiibo() {
         rc = nfpGetAdminInfo(&handle, &admin_info);
 
         if (R_SUCCEEDED(rc)) {
-            app_id = admin_info.application_area_id;
+            app_id = admin_info.access_id;
             printf("App area: 0x%x, game ID: 0x%lx, console: ", app_id, admin_info.application_id);
             switch (admin_info.application_area_version) {
                 case NfpApplicationAreaVersion_3DS:
@@ -168,7 +168,7 @@ Result process_amiibo() {
                 case NfpApplicationAreaVersion_Switch:
                     printf("Switch");
                     break;
-                case NfpApplicationAreaVersion_NotSet:
+                case NfpApplicationAreaVersion_Invalid:
                     printf("Not set");
                     break;
                 default:
